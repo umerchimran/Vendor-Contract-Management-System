@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Order Management</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #0066cc, #00b3b3);
+            color: #333;
+        }
+
+        /* Header Section */
+        .header {
+            background-color: #004080;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        /* Section Headers */
+        h2 {
+            text-align: center;
+            color: #004080;
+            margin-bottom: 20px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #004080;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            display: inline-block;
+            background-color: #004080;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #003366;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #004080;
+            color: #fff;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">Purchase Order Management</div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h2>Manage Purchase Orders</h2>
+
+        <!-- Add Purchase Order Form -->
+        <div>
+            <h3>Add New Purchase Order</h3>
+            <form id="addPurchaseOrderForm">
+                <div class="form-group">
+                    <label for="vendorID">Vendor ID:</label>
+                    <input type="number" id="vendorID" name="Vendor_ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemsDetails">Items Details:</label>
+                    <textarea id="itemsDetails" name="Items_Details" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="Quantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="totalCost">Total Cost:</label>
+                    <input type="number" id="totalCost" name="Total_Cost" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="Status">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <button type="submit">Add Purchase Order</button>
+            </form>
+        </div>
+
+        <!-- View Purchase Orders -->
+        <div>
+            <h3>Existing Purchase Orders</h3>
+            <table id="purchaseOrdersTable">
+                <thead>
+                    <tr>
+                        <th>PO ID</th>
+                        <th>Vendor ID</th>
+                        <th>Items Details</th>
+                        <th>Quantity</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic Content Here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">© 2024 Vendor Management System</div>
+
+    <script>
+        // Fetch and display purchase orders
+        const fetchPurchaseOrders = async () => {
+            const response = await fetch('/get-purchase-orders');
+            const purchaseOrders = await response.json();
+
+            const tableBody = document.querySelector('#purchaseOrdersTable tbody');
+            tableBody.innerHTML = '';
+
+            purchaseOrders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.PO_ID}</td>
+                    <td>${order.Vendor_ID}</td>
+                    <td>${order.Items_Details}</td>
+                    <td>${order.Quantity}</td>
+                    <td>${order.Total_Cost}</td>
+                    <td>${order.Status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        };
+
+        // Add new purchase order
+        document.getElementById('addPurchaseOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/add-purchase-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Purchase order added successfully!');
+                fetchPurchaseOrders();
+                e.target.reset();
+            } else {
+                alert('Error adding purchase order.');
+            }
+        });
+
+        // Initial load
+        fetchPurchaseOrders();
+    </script>
+</body>
+</html>

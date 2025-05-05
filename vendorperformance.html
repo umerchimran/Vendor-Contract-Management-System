@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        header h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+        }
+
+        form {
+            margin: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .no-results {
+            text-align: center;
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Vendor Report and Performance</h1>
+    </header>
+
+    <main>
+        <section>
+            <form id="search-form">
+                <label for="vendorName">Vendor Name:</label>
+                <input type="text" id="vendorName" name="vendorName" placeholder="Enter Vendor Name">
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section id="results">
+            <table id="vendor-contract-table">
+                <thead>
+                    <tr>
+                        <th>Vendor ID</th>
+                        <th>Vendor Name</th>
+                        <th>Contact Info</th>
+                        <th>Service Categories</th>
+                        <th>Compliance Certifications</th>
+                        <th>Performance Rating</th>
+                        <th>Contract ID</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Terms & Conditions</th>
+                        <th>Status</th>
+                        <th>Renewal Notification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        $(document).ready(function () {
+            $('#search-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const vendorName = $('#vendorName').val().trim();
+                if (!vendorName) {
+                    alert('Please enter a vendor name.');
+                    return;
+                }
+
+                $.get(`/vendorperformance?vendorName=${vendorName}`, function (response) {
+    console.log('Response from server:', response); // Debugging line
+
+    const tableBody = $('#vendor-contract-table tbody');
+    tableBody.empty();
+
+    if (response.data.length === 0) {
+        tableBody.append('<tr><td colspan="12" class="no-results">No results found</td></tr>');
+        return;
+    }
+
+    response.data.forEach(item => {
+        tableBody.append(`
+            <tr>
+                <td>${item.Vendor_ID}</td>
+                <td>${item.Name}</td>
+                <td>${item.Contact_Info}</td>
+                <td>${item.Service_Categories}</td>
+                <td>${item.Compliance_Certifications}</td>
+                <td>${item.Performance_Rating}</td>
+                <td>${item.Contract_ID || 'N/A'}</td>
+                <td>${item.Start_Date || 'N/A'}</td>
+                <td>${item.End_Date || 'N/A'}</td>
+                <td>${item.Terms_and_Conditions || 'N/A'}</td>
+                <td>${item.Status || 'N/A'}</td>
+                <td>${item.Renewal_Notification_Flag ? 'Yes' : 'No'}</td>
+            </tr>
+        `);
+    });
+}).fail(function (err) {
+    console.error('Error response:', err); // Log any error response
+    $('#vendor-contract-table tbody').empty();
+    alert(err.responseText || 'Error fetching data.');
+});
+            });
+        });
+    </script>
+</body>
+</html>

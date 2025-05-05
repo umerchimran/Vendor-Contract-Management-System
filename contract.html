@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Management</title>
+   
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #0066cc, #00b3b3);
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    margin-top: 20px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+        </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contract Management</h1>
+        
+        <!-- Contract Form -->
+        <div class="form-container">
+            <h2>Add a New Contract</h2>
+            <form id="contract-form">
+                <div class="form-group">
+                    <label for="vendor-id">Vendor ID:</label>
+                    <input type="number" id="vendor-id" name="Vendor_ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" name="Start_Date" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" name="End_Date" required>
+                </div>
+                <div class="form-group">
+                    <label for="terms">Terms and Conditions:</label>
+                    <textarea id="terms" name="Terms_and_Conditions" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="Status" required>
+                        <option value="Active">Active</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Renewed">Renewed</option>
+                    </select>
+                </div>
+                <button type="submit">Add Contract</button>
+            </form>
+        </div>
+
+        <!-- Button to check contract renewals -->
+        <div class="form-container">
+            <button id="check-renewals-btn">Check Contract Renewals</button>
+            <div id="renewal-notifications" style="margin-top: 10px; color: green;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Handle contract form submission
+        document.getElementById('contract-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                Vendor_ID: document.getElementById('vendor-id').value,
+                Start_Date: document.getElementById('start-date').value,
+                End_Date: document.getElementById('end-date').value,
+                Terms_and_Conditions: document.getElementById('terms').value,
+                Status: document.getElementById('status').value
+            };
+
+            try {
+                const response = await fetch('/add-contract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Contract added successfully!');
+                    document.getElementById('contract-form').reset();
+                } else {
+                    alert('Failed to add contract. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding contract:', error);
+                alert('Error adding contract. Please check your connection.');
+            }
+        });
+
+        // Handle Check Contract Renewals button click
+        document.getElementById('check-renewals-btn').addEventListener('click', async () => {
+            try {
+                // Send a request to the backend to check contracts renewals
+                const response = await fetch('/check-renewals', {
+                    method: 'GET',
+                });
+
+                const data = await response.json();
+
+                // Display the results in the UI
+                const renewalNotificationsDiv = document.getElementById('renewal-notifications');
+                if (data.length > 0) {
+                    renewalNotificationsDiv.innerHTML = 'Contracts about to expire within 30 days:';
+                    const contractsList = data.map(contract => 
+                        `<p>Contract ID: ${contract.Contract_ID}, Vendor ID: ${contract.Vendor_ID}, Expiry Date: ${contract.End_Date}</p>`
+                    ).join('');
+                    renewalNotificationsDiv.innerHTML += contractsList;
+                } else {
+                    renewalNotificationsDiv.innerHTML = 'No contracts are about to expire within 30 days.';
+                }
+            } catch (error) {
+                console.error('Error checking contract renewals:', error);
+                alert('Error checking contract renewals. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

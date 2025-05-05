@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Management System</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #0066cc, #00b3b3);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #004080;
+            color: #fff;
+            width: 100%;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .dashboard-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            overflow: visible;
+        }
+
+        .option-card {
+            background: #f7f7f7;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid transparent; /* Debugging border */
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background-color: #e6f7ff;
+        }
+
+        .option-card h3 {
+            font-size: 18px;
+            margin: 10px 0 5px;
+            color: #004080;
+        }
+
+        .footer {
+            margin-top: auto;
+            background-color: #004080;
+            color: #fff;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Welcome To Vendor Management System</div>
+    <div class="dashboard-container">
+        <h2 style="text-align: center;">Dashboard</h2>
+        <div class="options-grid">
+            <div class="option-card" onclick="navigateTo('/contract')">
+                <h3>Contracts</h3>
+                <p>Manage and track vendor contracts.</p>
+            </div>
+            <div class="option-card" onclick="navigateTo('/purchase')">
+                <h3>Purchase Order</h3>
+                <p>Create and review purchase orders.</p>
+            </div>
+            <div class="option-card" onclick="navigateTo('/budget')">
+                <h3>Budget Allocations</h3>
+                <p>Allocate and monitor budgets.</p>
+            </div>
+            <div class="option-card" onclick="navigateTo('/vendorperformance')">
+                <h3>Vendor Report & Performance</h3>
+                <p>Evaluate and score vendor performance.</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer">© 2024 Vendor Management System</div>
+    <script>
+        function navigateTo(path) {
+            window.location.href = path;
+        }
+    </script>
+</body>
+</html>
